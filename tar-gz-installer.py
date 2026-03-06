@@ -53,40 +53,10 @@ def delete_app(install_dir: Path, bin_path: Path, bashrc: Path, program_name: st
         bin_path.unlink()
 
 
-def extract_strip_components(archive: Path, install_dir: Path, strip_components: int = 1) -> None:
+
+def extract_archive(archive: Path, install_dir: Path) -> None:
     with tarfile.open(archive, "r:gz") as tf:
-        for member in tf.getmembers():
-            parts = Path(member.name).parts
-            if len(parts) <= strip_components:
-                continue
-
-            stripped_rel = Path(*parts[strip_components:])
-            target_path = install_dir / stripped_rel
-
-            if member.isdir():
-                target_path.mkdir(parents=True, exist_ok=True)
-                continue
-
-            if member.issym() or member.islnk():
-                target_path.parent.mkdir(parents=True, exist_ok=True)
-                try:
-                    if target_path.exists() or target_path.is_symlink():
-                        target_path.unlink()
-                    os.symlink(member.linkname, target_path)
-                except OSError:
-                    pass
-                continue
-
-            extracted = tf.extractfile(member)
-            if extracted is None:
-                continue
-
-            target_path.parent.mkdir(parents=True, exist_ok=True)
-            with extracted, open(target_path, "wb") as out:
-                shutil.copyfileobj(extracted, out)
-
-            if member.mode:
-                target_path.chmod(member.mode)
+        tf.extractall(path=install_dir, filter="data")
 
 
 def locate_target_bin(install_dir: Path, program_name: str) -> Path | None:
@@ -117,7 +87,7 @@ def install_app(url: str, program_name: str) -> int:
         return 1
     install_dir.mkdir(parents=True, exist_ok=True)
     try:
-        extract_strip_components(archive, install_dir, strip_components=1)
+        extract_archive(archive, install_dir, strip_components=1)
     except (tarfile.TarError, OSError) as exc:
         cleanup_failed_install(install_dir, archive)
         print(f"Error: failed to extract archive: {exc}")
