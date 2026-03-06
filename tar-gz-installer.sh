@@ -70,6 +70,8 @@ hash -r
 rm -f "$ARCHIVE"
 
 echo "Installation finished."
+echo "Ensure ~/.local/bin is persisted in your PATH:"
+echo "export PATH=\"\$HOME/.local/bin:\$PATH\""
 echo "Run this now:"
 echo "source ~/.bashrc"
 echo "Then test:"
