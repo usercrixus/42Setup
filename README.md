@@ -2,6 +2,7 @@
 
 ## Reset
 
+    ./reset_session.sh
 
 
 ## Install
