@@ -14,7 +14,7 @@ def is_executable_file(path: Path) -> bool:
     return path.is_file() and os.access(path, os.X_OK)
 
 
-def get_paths(program_name: str) -> tuple[Path, Path, Path, Path, Path]:
+def get_paths(program_name: str) -> tuple[Path, Path, Path, Path, Path, Path]:
     appdir = Path.home() / "App"
     bindir = Path.home() / ".local" / "bin"
     bashrc = Path.home() / ".bashrc"
@@ -64,6 +64,15 @@ def locate_target_bin(install_dir: Path, program_name: str) -> Path | None:
     if is_executable_file(direct):
         return direct
 
+    in_bin = install_dir / "bin" / program_name
+    if is_executable_file(in_bin):
+        return in_bin
+
+    for depth in (1, 2):
+        for candidate in install_dir.glob("*/" * depth + program_name):
+            if is_executable_file(candidate):
+                return candidate
+
     print(f"Could not locate {program_name} at expected path: {direct}")
     while True:
         user_path = input(f"Enter the app relative path from {install_dir}, or q to quit: ").strip()
@@ -87,7 +96,7 @@ def install_app(url: str, program_name: str) -> int:
         return 1
     install_dir.mkdir(parents=True, exist_ok=True)
     try:
-        extract_archive(archive, install_dir, strip_components=1)
+        extract_archive(archive, install_dir)
     except (tarfile.TarError, OSError) as exc:
         cleanup_failed_install(install_dir, archive)
         print(f"Error: failed to extract archive: {exc}")
