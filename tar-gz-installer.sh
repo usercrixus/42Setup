@@ -17,6 +17,11 @@ ARCHIVE="$APPDIR/${PROGRAM_NAME}.tar.gz"
 INSTALL_DIR="$APPDIR/$PROGRAM_NAME"
 BIN_PATH="$BINDIR/$PROGRAM_NAME"
 
+cleanup_failed_install() {
+    rm -rf "$INSTALL_DIR"
+    rm -f "$ARCHIVE"
+}
+
 mkdir -p "$APPDIR"
 mkdir -p "$BINDIR"
 
@@ -43,9 +48,28 @@ if [ ! -x "$TARGET_BIN" ]; then
 fi
 
 if [ -z "$TARGET_BIN" ] || [ ! -x "$TARGET_BIN" ]; then
-    echo "Error: could not find an executable in $INSTALL_DIR"
-    echo "Archive extracted, but symlink was not created."
-    exit 1
+    echo "Could not locate an executable automatically in $INSTALL_DIR."
+    while true; do
+        read -r -p "Please enter the full path to the executable, or q to quit: " USER_PATH
+
+        if [ "$USER_PATH" = "q" ]; then
+            cleanup_failed_install
+            echo "Installation aborted. Downloaded/extracted files were removed."
+            exit 1
+        fi
+
+        if [ -x "$USER_PATH" ]; then
+            TARGET_BIN="$USER_PATH"
+            break
+        fi
+
+        if [ -x "$INSTALL_DIR/$USER_PATH" ]; then
+            TARGET_BIN="$INSTALL_DIR/$USER_PATH"
+            break
+        fi
+
+        echo "Path is not an executable file. Try again, or enter q to quit."
+    done
 fi
 
 ln -sfn "$TARGET_BIN" "$BIN_PATH"
