@@ -1,15 +1,45 @@
-rm -rf /home/achaisne/snap
-rm -rf /home/achaisne/.local/
-rm -rf /home/achaisne/.npm/
-rm -rf /home/achaisne/.arduino15
-rm -rf /home/achaisne/.mozilla
-rm -rf /home/achaisne/.var/
-rm -rf /home/achaisne/.vscode
-rm -rf /home/achaisne/.cargo
-rm -rf /home/achaisne/.keras
-rm -rf /home/achaisne/.atom/
-rm -rf /home/achaisne/.config/
-rm -rf /home/achaisne/.java/
-rm -rf /home/achaisne/.dotnet/
-rm -rf /home/achaisne/.docker/
-rm -rf /home/achaisne/.arduinoIDE/
+
+
+#!/usr/bin/env bash
+set -euo pipefail
+
+TARGETS=(
+    "$HOME/snap"
+    "$HOME/.local"
+    "$HOME/.npm"
+    "$HOME/.arduino15"
+    "$HOME/.mozilla"
+    "$HOME/.var"
+    "$HOME/.vscode"
+    "$HOME/.cargo"
+    "$HOME/.keras"
+    "$HOME/.atom"
+    "$HOME/.config"
+    "$HOME/.java"
+    "$HOME/.dotnet"
+    "$HOME/.docker"
+    "$HOME/.arduinoIDE"
+)
+
+echo "WARNING: This will permanently delete these paths:"
+for path in "${TARGETS[@]}"; do
+    echo " - $path"
+done
+echo
+
+read -r -p "Type RESET to continue: " confirm
+if [ "$confirm" != "RESET" ]; then
+    echo "Aborted. Nothing was deleted."
+    exit 1
+fi
+
+for path in "${TARGETS[@]}"; do
+    if [ -e "$path" ]; then
+        rm -rf -- "$path"
+        echo "Deleted: $path"
+    else
+        echo "Not found: $path"
+    fi
+done
+
+echo "Reset complete."
