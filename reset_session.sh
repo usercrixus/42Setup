@@ -1,0 +1,15 @@
+rm -rf /home/achaisne/snap
+rm -rf /home/achaisne/.local/
+rm -rf /home/achaisne/.npm/
+rm -rf /home/achaisne/.arduino15
+rm -rf /home/achaisne/.mozilla
+rm -rf /home/achaisne/.var/
+rm -rf /home/achaisne/.vscode
+rm -rf /home/achaisne/.cargo
+rm -rf /home/achaisne/.keras
+rm -rf /home/achaisne/.atom/
+rm -rf /home/achaisne/.config/
+rm -rf /home/achaisne/.java/
+rm -rf /home/achaisne/.dotnet/
+rm -rf /home/achaisne/.docker/
+rm -rf /home/achaisne/.arduinoIDE/
