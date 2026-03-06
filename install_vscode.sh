@@ -34,6 +34,8 @@ export PATH="$HOME/.local/bin:$PATH"
 unalias code 2>/dev/null || true
 hash -r
 
+rm -rf $ARCHIVE
+
 echo "Installation finished."
 echo "Run this now:"
 echo "source ~/.bashrc"
